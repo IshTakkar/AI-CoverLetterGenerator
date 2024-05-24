@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Job Description to Cover Letter",
+  "version": "1.0",
+  "description": "Generate a cover letter from job descriptions on the current page",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "background": {
+    "service_worker": "background.bundle.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
