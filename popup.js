@@ -1,4 +1,5 @@
 import * as pdfjsLib from "pdfjs-dist";
+// import { pdfjsWorker } from "pdfjs-dist/build/pdf.worker.mjs";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 document.getElementById("generateButton").addEventListener("click", () => {
@@ -14,6 +15,7 @@ document.getElementById("generateButton").addEventListener("click", () => {
           const resume = localStorage.getItem("resume");
           if (resume) {
             generateCoverLetter(jobDescription, resume);
+            // document.getElementById("coverLetter").value = resume;
           } else {
             alert("Please upload your resume first.");
           }
@@ -40,12 +42,16 @@ document.getElementById("resumeUpload").addEventListener("change", (event) => {
 });
 
 function extractText() {
-  const paragraphs = Array.from(document.querySelectorAll("p, li"));
+  const paragraphs = Array.from(document.querySelectorAll("p, li, h1, h2"));
   return paragraphs.map((p) => p.innerText).join(" ");
 }
 
 async function extractTextFromPDF(pdfData) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "/pdf.worker.js";
+
   const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+
   let text = "";
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
@@ -61,17 +67,7 @@ async function generateCoverLetter(jobDescription, resume) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     const prompt = `
-      You are a cover letter generator. Your task is to create professional and concise 
-      cover letters based on the given resume and job descriptions. 
-      To compose a compelling cover letter, you must scrutinize the job description 
-      for key qualifications. Begin with a succinct introduction about the candidate's 
-      identity and career goals. Highlight skills aligned with the job, underpinned by 
-      tangible examples. Incorporate details about the company, emphasizing its mission 
-      or unique aspects that align with the candidate's values. Conclude by reaffirming 
-      the candidate's suitability, inviting further discussion. Use job-specific 
-      terminology for a tailored and impactful letter, maintaining a professional 
-      style suitable for a Full-Stack Software Developer. Please provide your response 
-      in under 300 words.
+      You are a cover letter generator. Your task is to create professional and concise cover letters based on the given resume and job descriptions. To compose a compelling cover letter, you must scrutinize the job description for key qualifications. Begin with a succinct introduction about the candidate's identity and career goals. Highlight skills aligned with the job, underpinned by tangible examples. Incorporate details about the company, emphasizing its mission or unique aspects that align with the candidate's values. Conclude by reaffirming the candidate's suitability, inviting further discussion. Use job-specific terminology for a tailored and impactful letter, maintaining a professional style suitable for a Full-Stack Software Developer. Please provide your response in under 300 words.
 
       This is the job description:
       ${jobDescription}

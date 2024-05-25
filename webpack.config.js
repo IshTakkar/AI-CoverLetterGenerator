@@ -20,6 +20,10 @@ module.exports = {
         { from: "manifest.json", to: "manifest.json" },
         { from: "popup.html", to: "popup.html" },
         { from: "popup.css", to: "popup.css" },
+        {
+          from: "node_modules/pdfjs-dist/build/pdf.worker.mjs",
+          to: "pdf.worker.js",
+        },
       ],
     }),
   ],

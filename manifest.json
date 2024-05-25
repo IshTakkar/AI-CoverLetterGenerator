@@ -4,6 +4,7 @@
   "version": "1.0",
   "description": "Generate a cover letter from job descriptions on the current page",
   "permissions": ["activeTab", "storage", "scripting"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
   "background": {
     "service_worker": "background.bundle.js"
   },
