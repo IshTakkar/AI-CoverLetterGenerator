@@ -2,25 +2,23 @@
 <html>
   <head>
     <title>Job Description to Cover Letter</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 10px;
-      }
-      #coverLetter {
-        width: 100%;
-        height: 300px;
-      }
-    </style>
+    <link rel="stylesheet" href="popup.css">
   </head>
   <body>
-    <h1>Generate Cover Letter</h1>
-    <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" />
-    <button id="generateButton">Generate Cover Letter</button>
-    <textarea
-      id="coverLetter"
-      placeholder="Your cover letter will appear here..."
-    ></textarea>
-    <script src="popup.js"></script>
+    <div class="container">
+      <h1>Generate Cover Letter</h1>
+      <div class="input-group">
+        <label for="resumeUpload">Upload Resume</label>
+        <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" />
+      </div>
+      <div class="input-group">
+        <button id="generateButton">Generate Cover Letter</button>
+      </div>
+      <textarea
+        id="coverLetter"
+        placeholder="Your cover letter will appear here..."
+      ></textarea>
+    </div>
+    <script src="popup.bundle.js"></script>
   </body>
 </html>
