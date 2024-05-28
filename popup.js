@@ -1,27 +1,36 @@
 import * as pdfjsLib from "pdfjs-dist";
-// import { pdfjsWorker } from "pdfjs-dist/build/pdf.worker.mjs";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-document.getElementById("generateButton").addEventListener("click", () => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tabs[0].id },
-        function: extractText,
-      },
-      (results) => {
-        if (results && results[0] && results[0].result) {
-          const jobDescription = results[0].result;
-          const resume = localStorage.getItem("resume");
-          if (resume) {
-            generateCoverLetter(jobDescription, resume);
-            // document.getElementById("coverLetter").value = resume;
-          } else {
-            alert("Please upload your resume first.");
+document.addEventListener("DOMContentLoaded", () => {
+  loadResumes();
+  const generateButton = document.getElementById("generateButton");
+  generateButton.disabled = true;
+
+  document.getElementById("resumeSelect").addEventListener("change", () => {
+    toggleGenerateButton();
+  });
+
+  document.getElementById("generateButton").addEventListener("click", () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: tabs[0].id },
+          function: extractText,
+        },
+        (results) => {
+          if (results && results[0] && results[0].result) {
+            const jobDescription = results[0].result;
+            const resume = localStorage.getItem("resume");
+            if (resume) {
+              showLoader();
+              generateCoverLetter(jobDescription, resume);
+            } else {
+              alert("Please upload your resume first.");
+            }
           }
         }
-      }
-    );
+      );
+    });
   });
 });
 
@@ -32,7 +41,8 @@ document.getElementById("resumeUpload").addEventListener("change", (event) => {
     reader.onload = async () => {
       const pdfData = new Uint8Array(reader.result);
       const text = await extractTextFromPDF(pdfData);
-      localStorage.setItem("resume", text);
+      // localStorage.setItem("resume", text);
+      saveResume(file.name, text);
       alert("Resume uploaded and parsed successfully.");
     };
     reader.readAsArrayBuffer(file);
@@ -47,8 +57,7 @@ function extractText() {
 }
 
 async function extractTextFromPDF(pdfData) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "/pdf.worker.js";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 
   const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
 
@@ -75,6 +84,7 @@ async function generateCoverLetter(jobDescription, resume) {
       This is my resume:
       ${resume}
     `;
+    console.log(prompt);
 
     // const prompt = "how are you?"
 
@@ -83,7 +93,53 @@ async function generateCoverLetter(jobDescription, resume) {
     const text = await response.text();
 
     document.getElementById("coverLetter").value = text;
+    hideLoader();
   } catch (error) {
     console.error("Error generating cover letter:", error);
+    hideLoader();
   }
+}
+
+function saveResume(name, text) {
+  chrome.storage.local.get({ resumes: [] }, (data) => {
+    const resumes = data.resumes;
+    resumes.push({ name, text });
+    chrome.storage.local.set({ resumes }, () => {
+      loadResumes();
+    });
+  });
+}
+
+function loadResumes() {
+  chrome.storage.local.get({ resumes: [] }, (data) => {
+    const resumeSelect = document.getElementById("resumeSelect");
+    resumeSelect.innerHTML = `<option value="">Select a resume</option>`;
+    data.resumes.forEach((resume, index) => {
+      const option = document.createElement("option");
+      option.value = resume.text;
+      option.textContent = resume.name;
+      resumeSelect.appendChild(option);
+    });
+    // toggleGenerateButton();
+  });
+}
+
+function toggleGenerateButton() {
+  const generateButton = document.getElementById("generateButton");
+  const resumeSelect = document.getElementById("resumeSelect");
+  generateButton.disabled = resumeSelect.value === "";
+}
+
+function showLoader() {
+  const loader = document.getElementById("loader");
+  const coverLetter = document.getElementById("coverLetter");
+  loader.style.display = "block";
+  coverLetter.classList.add("hidden");
+}
+
+function hideLoader() {
+  const loader = document.getElementById("loader");
+  const coverLetter = document.getElementById("coverLetter");
+  loader.style.display = "none";
+  coverLetter.classList.remove("hidden");
 }

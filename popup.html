@@ -2,18 +2,25 @@
 <html>
   <head>
     <title>Job Description to Cover Letter</title>
-    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <div class="container">
       <h1>Generate Cover Letter</h1>
       <div class="input-group">
-        <label for="resumeUpload">Upload Resume</label>
+        <label for="resumeSelect">Select Resume</label>
+        <select id="resumeSelect">
+          <option value="">Select a resume</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="resumeUpload">Upload New Resume</label>
         <input type="file" id="resumeUpload" accept=".pdf" />
       </div>
       <div class="input-group">
         <button id="generateButton">Generate Cover Letter</button>
       </div>
+      <div class="loader" id="loader"></div>
       <textarea
         id="coverLetter"
         placeholder="Your cover letter will appear here..."

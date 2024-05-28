@@ -30,7 +30,8 @@ h1 {
   color: #555;
   margin-bottom: 5px;
 }
-.input-group input[type="file"] {
+.input-group input[type="file"],
+.input-group select {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
@@ -52,6 +53,10 @@ h1 {
 .input-group button:hover {
   background-color: #0056b3;
 }
+.input-group button:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+}
 #coverLetter {
   width: 100%;
   height: 200px;
@@ -65,4 +70,28 @@ h1 {
 }
 #coverLetter::placeholder {
   color: #999;
+}
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+  display: none;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.hidden {
+  display: none;
 }
