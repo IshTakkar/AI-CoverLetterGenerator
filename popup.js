@@ -20,10 +20,12 @@ document.addEventListener("DOMContentLoaded", () => {
         (results) => {
           if (results && results[0] && results[0].result) {
             const jobDescription = results[0].result;
-            const resume = localStorage.getItem("resume");
-            if (resume) {
+            const resumeSelect = document.getElementById("resumeSelect");
+            const selectedResumeText = resumeSelect.value;
+
+            if (selectedResumeText) {
               showLoader();
-              generateCoverLetter(jobDescription, resume);
+              generateCoverLetter(jobDescription, selectedResumeText);
             } else {
               alert("Please upload your resume first.");
             }
@@ -41,7 +43,6 @@ document.getElementById("resumeUpload").addEventListener("change", (event) => {
     reader.onload = async () => {
       const pdfData = new Uint8Array(reader.result);
       const text = await extractTextFromPDF(pdfData);
-      // localStorage.setItem("resume", text);
       saveResume(file.name, text);
       alert("Resume uploaded and parsed successfully.");
     };
@@ -86,8 +87,6 @@ async function generateCoverLetter(jobDescription, resume) {
     `;
     console.log(prompt);
 
-    // const prompt = "how are you?"
-
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = await response.text();
@@ -120,7 +119,6 @@ function loadResumes() {
       option.textContent = resume.name;
       resumeSelect.appendChild(option);
     });
-    // toggleGenerateButton();
   });
 }
 
